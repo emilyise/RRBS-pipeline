@@ -15,3 +15,7 @@ Pipeline built with influence from: [NuGEN Technologies](https://github.com/nuge
 
 
 ### II. Diversity Adapter Trimming 
+
+
+### III. FastQC
+
