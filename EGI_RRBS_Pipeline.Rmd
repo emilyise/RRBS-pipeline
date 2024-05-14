@@ -44,7 +44,8 @@ find RQ025150-Ohm #-delete
 # trim diversity adapters
 ## pull the script from NuGen's git repo 
 ## https://github.com/nugentechnologies/NuMetRRBS
-curl -o Scripts/trimRRBSdiversity.py https://raw.githubusercontent.com/nugentechnologies/NuMetRRBS/master/\
+curl -o Scripts/trimRRBSdiversity.py \
+https://raw.githubusercontent.com/nugentechnologies/NuMetRRBS/master/\
 trimRRBSdiversityAdaptCustomers.py
 
 ## run NuGen diversity trimming script
@@ -95,7 +96,8 @@ Aligned
 ## pull NuDup script from NuGen
 ### May 13th- remember to document the details of how Nudup runs on paired-end 
 ### reads in the ReadMe for this git 
-curl -o Scripts nudup.py https://raw.githubusercontent.com/tecangenomics/nudup/master/nudup.py
+curl -o Scripts nudup.py \
+https://raw.githubusercontent.com/tecangenomics/nudup/master/nudup.py
 ### run script 
 
 ## delete files
