@@ -30,9 +30,11 @@ conda install trim-galore
 ## run trim galore to remove illumina adapter sequences for paired end reads
 mkdir Trimmed 
 N=4
-(
-for read1 in RQ025150-Ohm/*/*R1_001.fastq.gz; do ((i=i%N)); ((i++==0)) && wait read2=$(echo $read1| sed 's/R1_001.fastq.gz/R3_001.fastq.gz/'); trim_galore --paired -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC $read1 $read2 -o Trimmed & done
-)
+(for read1 in RQ025150-Ohm/*/*R1_001.fastq.gz; do \
+((i=i%N)); ((i++==0)) && wait \
+read2=$(echo $read1| sed 's/R1_001.fastq.gz/R3_001.fastq.gz/'); \
+trim_galore --paired -a AGATCGGAAGAGC -a2 AAATCAAAAAAAC $read1 $read2 \
+-o Trimmed & done)
 
 ## delete directory
 ### leaving delete commented out for my own safety
@@ -42,10 +44,13 @@ find RQ025150-Ohm #-delete
 # trim diversity adapters
 ## pull the script from NuGen's git repo 
 ## https://github.com/nugentechnologies/NuMetRRBS
-curl -o Scripts/trimRRBSdiversity.py https://raw.githubusercontent.com/nugentechnologies/NuMetRRBS/master/trimRRBSdiversityAdaptCustomers.py
+curl -o Scripts/trimRRBSdiversity.py https://raw.githubusercontent.com/nugentechnologies/NuMetRRBS/master/\
+trimRRBSdiversityAdaptCustomers.py
 
 ## run NuGen diversity trimming script
-for read1 in Trimmed/*R1_001_val_1.fq.gz; do read2=$(echo $read1| sed 's/R1_001_val_1.fq.gz/R3_001_val_2.fq.gz/'); python Scripts/trimRRBSdiversity.py -1 $read1 -2 $read2 -o Trimmed & done
+for read1 in Trimmed/*R1_001_val_1.fq.gz; do \
+read2=$(echo $read1| sed 's/R1_001_val_1.fq.gz/R3_001_val_2.fq.gz/'); \
+python Scripts/trimRRBSdiversity.py -1 $read1 -2 $read2 -o Trimmed & done
 
 ## delete files
 ### leaving delete commented out for my own safety
@@ -65,9 +70,20 @@ fastqc -o Fastqc -t 4 Trimmed/*trimmed.fq.gz
 mkdir Aligned
 conda install bismark
 module load bimark
+
+## run alignment 
 N=4
-(for read1 in Trimmed/*R1_001_val_1.fq_trimmed.fq.gz; do ((i=i%N)); ((i++==0)) && wait read2=$(echo $read1| sed 's/R1_001_val_1.fq_trimmed.fq.gz/R3_001_val_2.fq_trimmed.fq.gz/'); bismark --bowtie2 #location/bismark/genome 
--1 $read1 -2 $read2 -o Aligned & done)
+(for read1 in Trimmed/*R1_001_val_1.fq_trimmed.fq.gz; do \
+((i=i%N)); ((i++==0)) && wait \
+read2=$(echo $read1| \
+sed 's/R1_001_val_1.fq_trimmed.fq.gz/R3_001_val_2.fq_trimmed.fq.gz/'); \
+bismark --bowtie2 --gzip --sam /projects/rpci/shared/reference/GRCh38_bismark/ \
+-1 $read1 -2 $read2 & done)
+
+## for whatever reason, I can't get these files to output where I want them 
+## so I'm just going to move them 
+mv *.gz \
+Aligned
 
 ###############################################################################
 # run de-duplication 
@@ -76,27 +92,22 @@ N=4
 ## typical deduplication technique of identifying overlapping genomic regions 
 ## (NOT for use in targeted assay like RRBS)
 
-## strip bismark to sam for NuDup
-### pull script from NuGen
-curl -o Scripts strip_bismark_sam.sh https://raw.githubusercontent.com/nugentechnologies/NuMetRRBS/master/strip_bismark_sam.sh
-### run script 
-
-
 ## pull NuDup script from NuGen
-### May 13th- remember to document the details of how Nudup runs on paired-end reads in the ReadMe for this git 
+### May 13th- remember to document the details of how Nudup runs on paired-end 
+### reads in the ReadMe for this git 
 curl -o Scripts nudup.py https://raw.githubusercontent.com/tecangenomics/nudup/master/nudup.py
 ### run script 
 
 ## delete files
-find Scripts/strip_bismark_sam.sh -delete
 find Scripts/Scripts nudup.py -delete
 
 
 ###############################################################################
-# run bimark-rDNA?
+# run bismark-rDNA?
 
 ###############################################################################
 # run bismark-methylex
 
 ###############################################################################
+
 ```
