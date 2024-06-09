@@ -21,15 +21,13 @@ First, adapters need to be trimmed from the 3' end of read. We use Trim Galore w
 ### II. Diversity Adapter Trimming 
 Sequence complexity is an important consideration on Illimina sequences. If sequences lack complexity, cluster identification and color matrix calculations can be negatively impacted. RRBS libraries all begin with CGG or TCC. To ensure that all four bases are present in the first few cycles of sequencing, NuGEN Ovation includes the addition of 0-3 bp diversity adapters in between the sequencing primer and the fragment. Thus, the diversity adapters must be trimmed after illumina adapter sequences are trimmed. NuGEN has published a script for this purpose, which we apply in this pipeline. 
 
-### II.I bp trimming? (working)
-- trim 2bp from each read? See Trim Galore -RRBS (3' end)
-
 ### III. FastQC
 After adapter trimming, we perfrom FastQC to perform quality control checks on raw sequence data. We expect per base sequence content to be flaged in a FastQC report for RRBS. Position 2 and 3 (as previously discussed) should contain 100% G sequences and the overall content should be sketwed with higher T content and lower C content than other non-targeted assays. Per sequence GC content should be higher than the theoretical distriubition, as RRBS is biased towed CpG islands. Likely to also identify warnings for overrepresented sequencences and sequence duplication level. 
 
-### IV. Alignment (working)
-Aligned with bismark. Note bismark genome preparation (not perfomed in this pipeline). Run with --sam for use with NuGEN specific deduplicaiton. (if not run with --sam, will have to strip bam files for use with nudup). 
+### IV. Alignment
+Aligned with bismark. Note that genome preparation for bismark is NOT performed with this pipeline- files were previously prepared using GrCh38. Run with --sam for use with NuGEN specific deduplicaiton. (if not run with --sam, will have to strip bam files for use with nudup). 
+
+### V. Deduplication
+Performed with NuGEN custom script. Can't run genomic repeat based deduplication on RRBS (targeted). But, NuGEN introduces unique molecular tags for this purpose, therfore deduplication can be performed with the custom script. 
 
 
-### V. Deduplication (working)
-Performed with NuGEN custom script. Can't run genomic repeat based deduplication on RRBS (targeted). But, NuGEN introduces unique molecular tags for this purpose. Explain custom tags and pipeline workflow. 
